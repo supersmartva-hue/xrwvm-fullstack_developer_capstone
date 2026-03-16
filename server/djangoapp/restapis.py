@@ -1,58 +1,64 @@
-# Uncomment the imports below before you add the function code
-import requests
+import json
 import os
 from dotenv import load_dotenv
 
-
 load_dotenv()
 
-backend_url = os.getenv(
-    'backend_url', default="http://localhost:3030")
+# Load the dealership JSON once at startup
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DEALERSHIP_FILE = os.path.join(BASE_DIR, "dealership.json")
+
+with open(DEALERSHIP_FILE, "r") as f:
+    DEALERS_DATA = json.load(f)["dealerships"]
+
 sentiment_analyzer_url = os.getenv(
-    'sentiment_analyzer_url',
-    default="http://localhost:5050/")
+    'sentiment_analyzer_url', default="http://localhost:5050/"
+)
 
 
-# def get_request(endpoint, **kwargs):
+# Get request for dealerships
 def get_request(endpoint, **kwargs):
-    params = ""
-    if (kwargs):
-        for key, value in kwargs.items():
-            params = params+key+"="+value+"&"
+    """
+    This function replaces network calls with local JSON for dealer info.
+    Supports endpoints:
+      - /fetchDealers
+      - /fetchDealers/<state>
+      - /fetchDealer/<dealer_id>
+    """
+    print(f"GET called for endpoint: {endpoint}")
 
-    request_url = backend_url+endpoint+"?"+params
+    # Get all dealers
+    if endpoint.startswith("/fetchDealers"):
+        # Check if state is included
+        parts = endpoint.split("/")
+        if len(parts) == 3 and parts[2] != "":
+            state = parts[2]
+            filtered = [d for d in DEALERS_DATA if d["state"] == state]
+            return filtered
+        else:
+            return DEALERS_DATA
 
-    print("GET from {} ".format(request_url))
-    try:
-        # Call get method of requests library with URL and parameters
-        response = requests.get(request_url)
-        return response.json()
-    except Exception as err:
-        # If any error occurs
-        print(f"Unexpected {err=}, {type(err)=}")
-        print("Network exception occurred")
+    # Get single dealer by ID
+    elif endpoint.startswith("/fetchDealer/"):
+        dealer_id = int(endpoint.split("/")[-1])
+        dealer = next((d for d in DEALERS_DATA if d["id"] == dealer_id), None)
+        return dealer if dealer else {}
 
+    # Placeholder for reviews (empty list for now)
+    elif endpoint.startswith("/fetchReviews/dealer/"):
+        return []
 
-# def analyze_review_sentiments(text):
+    return {}
+    
+
+# Sentiment analysis stub (you can keep calling external service if available)
 def analyze_review_sentiments(text):
-    request_url = sentiment_analyzer_url+"analyze/"+text
-    try:
-        # Call get method of requests library with URL and parameters
-        response = requests.get(request_url)
-        return response.json()
-    except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        print("Network exception occurred")
+    # Simple stub for testing
+    return {"sentiment": "neutral"}
 
 
-# def post_review(data_dict):
-# Add code for posting review
+# Post review stub
 def post_review(data_dict):
-    request_url = backend_url+"/insert_review"
-    try:
-        response = requests.post(request_url, json=data_dict)
-        print(response.json())
-        return response.json()
-    except Exception as err:
-        print(f"Unexpected {err=}, {type(err)=}")
-        print("Network exception occurred")
+    # Simple stub for testing
+    print("Review received:", data_dict)
+    return {"status": "success", "data": data_dict}
