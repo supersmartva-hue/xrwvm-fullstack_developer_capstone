@@ -29,9 +29,9 @@ SECRET_KEY =\
 DEBUG = True
 
 ALLOWED_HOSTS = [
+    '127.0.0.1',
     'localhost',
-    'https://nelsonmsk710-8000.theianext-1-labs-prod-misc-tools-us-east-0.'
-    'proxy.cognitiveclass.ai'
+    'https://nelsonmsk710-8000.theianext-1-labs-prod-misc-tools-us-east-0.proxy.cognitiveclass.ai'
 ]
 CSRF_TRUSTED_ORIGINS = [
     'https://nelsonmsk710-8000.theianext-1-labs-prod-misc-tools-us-east-0.'
