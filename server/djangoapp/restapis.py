@@ -6,11 +6,10 @@ load_dotenv()
 
 # Load the dealership JSON once at startup
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DEALERS_DATA = json.load(f)
+DEALERSHIP_FILE = os.path.join(BASE_DIR, "dealership.json")
 
 with open(DEALERSHIP_FILE, "r") as f:
-    DEALERS_DATA = json.load(f)["dealerships"]
-
+    DEALERS_DATA = json.load(f)
 sentiment_analyzer_url = os.getenv(
     'sentiment_analyzer_url', default="http://localhost:5050/"
 )
