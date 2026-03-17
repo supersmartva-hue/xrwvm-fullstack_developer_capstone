@@ -6,7 +6,7 @@ load_dotenv()
 
 # Load the dealership JSON once at startup
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DEALERSHIP_FILE = os.path.join(BASE_DIR, "dealership.json")
+DEALERS_DATA = json.load(f)
 
 with open(DEALERSHIP_FILE, "r") as f:
     DEALERS_DATA = json.load(f)["dealerships"]
